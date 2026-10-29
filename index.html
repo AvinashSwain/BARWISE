@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BarWise – Rebar Tools for Detailers and Estimators</title>
+<meta name="description" content="BarWise: stock length, mesh, bar list cutting optimizer and dimension converters for rebar detailers and estimators.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23c2410c'/%3E%3Crect x='8' y='24' width='48' height='16' rx='8' fill='white'/%3E%3C/svg%3E">
+<style>
+:root{--c:#e8590c;--bg1:#fff3e6;--bg2:#f1ecfd;--bg3:#e3f5f1;--card:#fff;--ink:#1d2330;--mute:#5a6475;--line:#ddd8e4;--field:#f8f6fb;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#1b1224;--bg2:#101727;--bg3:#0d1f1f;--card:#1b1f2b;--ink:#eef0f6;--mute:#a3acbd;--line:#333a4d;--field:#141824;color-scheme:dark}}
+:root[data-theme="dark"]{--bg1:#1b1224;--bg2:#101727;--bg3:#0d1f1f;--card:#1b1f2b;--ink:#eef0f6;--mute:#a3acbd;--line:#333a4d;--field:#141824;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%);background-attachment:fixed;color:var(--ink);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;padding:20px 16px 40px;display:flex;justify-content:center}
+main{width:100%;max-width:760px}
+.top{background:linear-gradient(115deg,#d9480f 0%,#c2255c 52%,#5f3dc4 100%);color:#fff;border-radius:18px;padding:20px 22px 26px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;cursor:pointer;margin-bottom:16px;box-shadow:0 10px 28px rgba(194,37,92,.28)}
+.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:9px;background:repeating-linear-gradient(110deg,transparent 0 9px,rgba(255,255,255,.35) 9px 11px)}
+.top svg{width:50px;height:50px;flex:none}
+.top h1{font-size:1.9rem;margin:0;letter-spacing:-.01em;line-height:1}
+.top h1 span{color:#ffd43b}
+.top p{margin:5px 0 0;font-size:.9rem;font-weight:600;color:#fff}
+h2.gh{font-size:.8rem;letter-spacing:.09em;text-transform:uppercase;color:var(--mute);margin:22px 0 0;font-weight:700}
+h3{font-size:1.05rem;margin:18px 0 6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:10px 0}
+.tool{text-align:left;background:color-mix(in srgb,var(--c) 10%,var(--card));border:1px solid color-mix(in srgb,var(--c) 35%,var(--line));border-top:6px solid var(--c);border-radius:16px;padding:18px 18px 22px;cursor:pointer;color:var(--ink);font:inherit;min-height:200px;transition:box-shadow .15s,transform .15s}
+.tool:hover{box-shadow:0 12px 28px color-mix(in srgb,var(--c) 40%,transparent);transform:translateY(-3px)}
+.tool svg{width:60px;height:60px;display:block;margin-bottom:16px;filter:drop-shadow(0 4px 6px color-mix(in srgb,var(--c) 40%,transparent))}
+.tool b{display:block;font-size:1.2rem;margin-bottom:8px}
+.tool span{display:block;color:var(--mute);font-size:.93rem;line-height:1.5}
+.btn,.back{padding:9px 14px;border:1px solid color-mix(in srgb,var(--c) 45%,var(--line));background:var(--card);color:var(--ink);border-radius:999px;font:inherit;font-size:.9rem;font-weight:600;cursor:pointer}
+.btn:hover,.back:hover{background:var(--c);border-color:var(--c);color:#fff}
+.back{margin:0 0 12px}
+.card{background:var(--card);border:1px solid color-mix(in srgb,var(--c) 30%,var(--line));border-top:6px solid var(--c);border-radius:16px;padding:18px;box-shadow:0 8px 24px color-mix(in srgb,var(--c) 14%,transparent)}
+label{display:block;font-size:.85rem;color:var(--mute);margin-bottom:12px;font-weight:600}
+input,select,textarea{width:100%;margin-top:4px;padding:12px;font:inherit;font-size:1.05rem;background:var(--field);color:var(--ink);border:1px solid color-mix(in srgb,var(--c) 30%,var(--line));border-radius:10px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--c);outline-offset:1px}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.r{display:flex;gap:8px;margin-bottom:8px}.r select{flex:0 0 38%;margin:0}.r input{margin:0}
+.x{flex:none;width:42px;border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:10px;font-size:1.1rem;cursor:pointer}
+.x:hover{background:var(--c);color:#fff;border-color:var(--c)}
+.hint{font-size:.82rem;color:var(--mute);margin:0 0 10px;line-height:1.5}
+.tape{margin:12px 0;background:linear-gradient(135deg,color-mix(in srgb,var(--c) 82%,#000),color-mix(in srgb,var(--c) 40%,#151a28));color:#fff;border-radius:14px;padding:18px 18px 28px;position:relative;overflow:hidden;box-shadow:0 8px 20px color-mix(in srgb,var(--c) 30%,transparent)}
+.tape::after{content:"";position:absolute;left:0;right:0;bottom:0;height:9px;background:repeating-linear-gradient(110deg,transparent 0 9px,rgba(255,255,255,.3) 9px 11px)}
+.big{font-size:2.2rem;font-weight:800;line-height:1.1;word-break:break-word;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.25)}
+.alt{margin-top:6px;font-size:.92rem;font-weight:600;line-height:1.5;white-space:pre-line;color:rgba(255,255,255,.9)}
+.tw{overflow-x:auto;border:1px solid color-mix(in srgb,var(--c) 30%,var(--line));border-radius:12px;margin-top:10px}
+table{border-collapse:collapse;width:100%;font-size:.88rem;white-space:nowrap}
+th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left;font-weight:700}
+th{background:color-mix(in srgb,var(--c) 14%,var(--card));color:var(--ink);font-weight:700}
+tr:last-child td{border-bottom:0}
+ul{margin:6px 0;padding-left:20px;font-size:.9rem;line-height:1.55}
+.sug{border:2px solid var(--c);background:color-mix(in srgb,var(--c) 9%,var(--card));border-radius:12px;padding:10px 14px;margin:10px 0}
+.err{color:#d6336c;font-size:.85rem;font-weight:600}
+.up{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.up .btn{margin:0}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.note{margin-top:16px;font-size:.8rem;color:var(--mute);line-height:1.5}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <div class="top" id="ttl" role="button" tabindex="0" aria-label="BarWise home">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#fff"/><rect x="7" y="24" width="50" height="16" rx="8" fill="#d9480f"/><path d="M18 24l-4 16M28 24l-4 16M38 24l-4 16M48 24l-4 16" stroke="#fff" stroke-width="2.6"/></svg>
+    <div><h1>Bar<span>Wise</span></h1><p>Smart tools for rebar detailers and estimators</p></div>
+  </div>
+  <label id="rgl">Region and standard
+    <select id="rg">
+      <option value="us">United States (ASTM A615, ft-in)</option>
+      <option value="ca">Canada (CSA G30.18, metric)</option>
+      <option value="uk">United Kingdom (BS 4449, mm)</option>
+      <option value="in">India (IS 1786, mm)</option>
+    </select>
+  </label>
+  <div id="home"></div>
+  <button class="back" id="back" hidden>← All tools</button>
+
+  <section id="p-stock" class="card">
+    <label>Stock bar length<input id="sk" autocomplete="off" spellcheck="false"></label>
+    <label>Allowance % (laps and wastage)<input id="sa" value="5" inputmode="decimal"></label>
+    <div id="sr"></div>
+    <button class="btn" id="sadd">+ Add bar size</button>
+    <div class="tw"><table id="st"></table></div>
+    <p class="hint" id="sh" style="margin-top:10px"></p>
+  </section>
+
+  <section id="p-mesh" class="card" hidden>
+    <label>Mesh<select id="mp"></select></label>
+    <label id="mkw" hidden>Mesh weight (kg/m²)<input id="mk" inputmode="decimal" value="3"></label>
+    <div class="row">
+      <label>Sheet length<input id="mL" autocomplete="off"></label>
+      <label>Sheet width<input id="mW" autocomplete="off"></label>
+    </div>
+    <label id="mal"><span id="mat">Area to cover</span><input id="ma" inputmode="decimal" value="500"></label>
+    <div class="row">
+      <label>Lap %<input id="ml" inputmode="decimal" value="10"></label>
+      <label>Wastage %<input id="mw" inputmode="decimal" value="5"></label>
+    </div>
+    <div class="tape" aria-live="polite"><div class="big" id="o2"></div><div class="alt" id="a2"></div></div>
+    <p class="hint" style="margin-top:10px" id="mh"></p>
+  </section>
+
+  <section id="p-opt" class="card" hidden>
+    <div class="row">
+      <label>Stock bar length<input id="ok" autocomplete="off" spellcheck="false"></label>
+      <label>Splice lap (× bar dia.)<input id="ol" value="40" inputmode="decimal"></label>
+    </div>
+    <p class="hint">Upload your bar list as .xlsx, .xls or .csv, or drop the file on this card. Required columns: <b>Mark, Size, Qty, Cut length</b>. Optional: <b>Flex leg, Can shorten by, Can lengthen by</b>, for example leg C of shape 17 can shorten by 3″. Use Download template for the layout.</p>
+    <div class="up"><label class="btn">Upload Excel or CSV<input id="xf" type="file" accept=".xlsx,.xls,.csv" hidden></label><button class="btn" id="tpl" type="button">Download template</button><span class="hint" id="xs" style="margin:0"></span></div>
+    <textarea id="ob" hidden></textarea>
+    <div id="oo"></div>
+  </section>
+
+  <section id="p-df" class="card" hidden>
+    <label>Decimal feet<input id="d1" inputmode="decimal" autocomplete="off" value="12.4583"></label>
+    <label>Round to<select id="dr1" class="dr"></select></label>
+    <div class="tape" aria-live="polite"><div class="big" id="o1"></div><div class="alt" id="a1"></div></div>
+    <div class="acts"><button class="btn cp" data-o="o1">Copy result</button></div>
+  </section>
+
+  <section id="p-mm" class="card" hidden>
+    <label>Millimetres<input id="d2" inputmode="decimal" autocomplete="off" value="1711"></label>
+    <label>Round to<select id="dr2" class="dr"></select></label>
+    <div class="tape" aria-live="polite"><div class="big" id="o3"></div><div class="alt" id="a3"></div></div>
+    <div class="acts"><button class="btn cp" data-o="o3">Copy result</button><button class="btn" data-go="fi">Feet-Inches to mm</button></div>
+  </section>
+
+  <section id="p-fi" class="card" hidden>
+    <label>Feet and inches<input id="d3" autocomplete="off" spellcheck="false" value="5'-7 3/8&quot;"></label>
+    <p class="hint">Type 5'-7 3/8", 5 ft 7 in, or 7 3/8" for inches only.</p>
+    <div class="tape" aria-live="polite"><div class="big" id="o4"></div><div class="alt" id="a4"></div></div>
+    <div class="acts"><button class="btn cp" data-o="o4">Copy result</button><button class="btn" data-go="mm">mm to Feet-Inches</button></div>
+  </section>
+
+  <p class="note">Estimating aid only. Shortening or lengthening any leg changes anchorage and fit, so get the engineer's approval before changing a bar. Weights are nominal. Confirm against your supplier and project specification.</p>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){
+var $=function(id){return document.getElementById(id)};
+var US=[["#3",9.5,.376],["#4",12.7,.668],["#5",15.9,1.043],["#6",19.1,1.502],["#7",22.2,2.044],["#8",25.4,2.670],["#9",28.7,3.4],["#10",32.3,4.303],["#11",35.8,5.313],["#14",43,7.65],["#18",57.3,13.6]];
+var R={
+ us:{k:"us",us:1,stock:"40'",sample:"#5",bars:US.map(function(r){return{id:r[0],d:r[1],kg:r[2]*1.488164}})},
+ ca:{k:"ca",stock:"12 m",sample:"15M",bars:[["10M",11.3,100],["15M",16,200],["20M",19.5,300],["25M",25.2,500],["30M",29.9,700],["35M",35.7,1000],["45M",43.7,1500],["55M",56.4,2500]].map(function(r){return{id:r[0],d:r[1],kg:r[2]*.00785}})},
+ uk:{k:"uk",stock:"12 m",sample:"16",bars:[6,8,10,12,16,20,25,32,40,50].map(function(d){return{id:String(d),d:d,kg:d*d*.0061654}})},
+ in:{k:"in",stock:"12 m",sample:"16",bars:[8,10,12,16,20,25,28,32,36,40].map(function(d){return{id:String(d),d:d,kg:d*d*.0061654}})}
+};
+var cur=R.us,step=1/16;
+function num(n,d){return Number(n.toFixed(d)).toLocaleString("en-US",{maximumFractionDigits:d})}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function frac(u){var n=u,d=16;while(n>0&&n%2===0){n/=2;d/=2}return n?n+"/"+d:""}
+function fmtIn(x){var s=x<0?"-":"";x=Math.abs(x);var u=Math.round(x*16),ft=Math.floor(u/192),r=u-ft*192,w=Math.floor(r/16),f=frac(r%16);return s+ft+"′-"+(f?(w?w+" "+f:f):w)+"″"}
+function fmtL(x){return cur.us?fmtIn(x):num(x*25.4,0)+" mm"}
+function fmtT(x){return cur.us?num(x/12,1)+" ft":num(x*.0254,1)+" m"}
+function wt(kg){return cur.us?num(kg*2.2046226,0)+" lb":num(kg,0)+" kg"}
+function wt2(kg){return cur.us?num(kg*2.2046226,0)+" lb ("+num(kg,0)+" kg)":num(kg,0)+" kg ("+num(kg*2.2046226,0)+" lb)"}
+function parseLen(s){
+  var m=s.match(/^(?:(\d+(?:\.\d+)?)\s*(?:'|ft|feet|foot))?\s*-?\s*(.*?)\s*(?:"|in|inch|inches)?$/);
+  if(!m)return null;
+  var f=m[1]?parseFloat(m[1]):0,r=m[2].trim(),i=0;
+  if(r){var q=r.match(/^(?:(\d+(?:\.\d+)?)(?:[\s-]+(\d+)\/(\d+))?|(\d+)\/(\d+))$/);
+    if(!q)return null;
+    if(q[4]){if(+q[5]===0)return null;i=q[4]/q[5]}
+    else{i=parseFloat(q[1]);if(q[2]){if(+q[3]===0)return null;i+=q[2]/q[3]}}}
+  return f*12+i;
+}
+function term(s){
+  s=String(s||"").toLowerCase().replace(/[\u2032\u2019\u2018`]/g,"'").replace(/[\u2033\u201d\u201c]/g,'"').trim();
+  if(!s)return null;
+  var m=s.match(/^(\d+(?:\.\d+)?)\s*(mm|cm|m)$/);
+  if(m)return parseFloat(m[1])*(m[2]==="mm"?1:m[2]==="cm"?10:1000)/25.4;
+  if(/^\d+(\.\d+)?$/.test(s))return cur.us?parseFloat(s):parseFloat(s)/25.4;
+  return parseLen(s);
+}
+function bar(s){
+  s=String(s||"").trim().toUpperCase().replace(/\s*MM$/,"");
+  if(cur.k==="us"&&s&&s[0]!=="#")s="#"+s;
+  if(cur.k==="ca"&&s&&!/M$/.test(s))s+="M";
+  return cur.bars.filter(function(b){return b.id===s})[0];
+}
+function opts(){return cur.bars.map(function(b){return '<option value="'+b.id+'">'+b.id+(cur.us||cur.k==="ca"?"":" mm")+'</option>'}).join("")}
+
+/* ---------- Stock length ---------- */
+function addRow(id,len){
+  var d=document.createElement("div");d.className="r";
+  d.innerHTML='<select>'+opts()+'</select><input value="'+len+'" autocomplete="off" aria-label="Total length"><button class="x" aria-label="Remove row">×</button>';
+  d.querySelector("select").value=id;$("sr").appendChild(d);
+}
+function calcStock(){
+  var sk=term($("sk").value),al=parseFloat($("sa").value)||0,rows=[],tb=0,tn=0,to=0;
+  if(sk===null||sk<=0){$("st").innerHTML="<tr><td>Enter a stock length.</td></tr>";return}
+  [].forEach.call($("sr").children,function(r){
+    var b=bar(r.querySelector("select").value),L=term(r.querySelector("input").value);
+    if(!b||L===null||L<0)return;
+    var need=L*(1+al/100),n=Math.ceil(need/sk-1e-9),net=need*.0254*b.kg,ord=n*sk*.0254*b.kg;
+    tb+=n;tn+=net;to+=ord;rows.push("<tr><td>"+b.id+"</td><td>"+fmtT(need)+"</td><td>"+n+"</td><td>"+wt(net)+"</td><td>"+wt(ord)+"</td></tr>");
+  });
+  $("st").innerHTML="<tr><th>Bar</th><th>Length needed</th><th>Stock bars</th><th>Net weight</th><th>Order weight</th></tr>"+rows.join("")+"<tr><td>Total</td><td></td><td>"+tb+"</td><td>"+wt(tn)+"</td><td>"+wt(to)+"</td></tr>";
+}
+
+/* ---------- Mesh ---------- */
+var UKM=[["A142",2.22],["A193",3.02],["A252",3.95],["A393",6.16],["B196",3.05],["B283",3.73],["B385",4.53],["B503",5.93],["B785",8.14],["B1131",10.9],["C283",2.61],["C385",3.41],["C503",4.34],["C636",5.55],["C785",6.72]];
+function kgf(ax,ay,sx,sy){return 7.85*(ax/sy+ay/sx)}
+function meshList(){
+  var k=cur.k,mm=function(x){return x/25.4},o=[];
+  if(k==="uk")UKM.forEach(function(r){var c=r[0][0]==="C";o.push({n:r[0]+" (BS 4483)",kg:r[1],L:mm(c?6000:4800),W:mm(2400)})});
+  if(k==="us")[["6×6 – W1.4×W1.4",.014,6],["6×6 – W2.1×W2.1",.021,6],["6×6 – W2.9×W2.9",.029,6],["6×6 – W4×W4",.04,6],["4×4 – W1.4×W1.4",.014,4],["4×4 – W2.9×W2.9",.029,4]].forEach(function(r){var a=r[1]*645.16,s=r[2]*25.4;o.push({n:r[0],kg:kgf(a,a,s,s),L:120,W:60})});
+  if(k==="ca")[["152×152 MW9.1×MW9.1",9.1,152],["152×152 MW18.7×MW18.7",18.7,152],["152×152 MW25.8×MW25.8",25.8,152],["102×102 MW9.1×MW9.1",9.1,102],["102×102 MW18.7×MW18.7",18.7,102]].forEach(function(r){o.push({n:r[0],kg:kgf(r[1],r[1],r[2],r[2]),L:mm(6000),W:mm(2400)})});
+  if(k==="in")[[5,150],[6,150],[6,100],[8,150],[8,100],[10,150]].forEach(function(r){var a=Math.PI/4*r[0]*r[0];o.push({n:"Ø"+r[0]+" mm @ "+r[1]+" mm both ways",kg:kgf(a,a,r[1],r[1]),L:mm(6000),W:mm(2400)})});
+  var d=o[0];o.push({n:"Custom (enter weight)",kg:0,custom:1,L:d.L,W:d.W});
+  return o;
+}
+var ML=[];
+function setMesh(){
+  ML=meshList();
+  $("mp").innerHTML=ML.map(function(m,i){return '<option value="'+i+'">'+esc(m.n)+'</option>'}).join("");
+  $("mat").textContent="Area to cover ("+(cur.us?"ft²":"m²")+")";
+  $("ma").value=cur.us?"5000":"500";
+  loadSheet();
+}
+function loadSheet(){var m=ML[$("mp").value],raw=function(x){return cur.us?fmtIn(x):Math.round(x*25.4)+" mm"};$("mL").value=raw(m.L);$("mW").value=raw(m.W);$("mkw").hidden=!m.custom;calcMesh()}
+function calcMesh(){
+  var m=ML[$("mp").value],L=term($("mL").value),W=term($("mW").value),A=parseFloat($("ma").value),lp=parseFloat($("ml").value)||0,ws=parseFloat($("mw").value)||0;
+  var kg=m.custom?parseFloat($("mk").value):m.kg;
+  if(!L||!W||isNaN(A)||A<0||isNaN(kg)){$("o2").textContent="—";$("a2").textContent="Check the sheet size, area and weight.";return}
+  var a=cur.us?A*.09290304:A,gross=a*(1+lp/100)*(1+ws/100),sa=L*W*.00064516,n=Math.ceil(gross/sa-1e-9),sw=sa*kg;
+  $("o2").textContent=n+" sheets";
+  $("a2").textContent="Gross area "+num(cur.us?gross/.09290304:gross,1)+(cur.us?" ft²":" m²")+" (factor "+num((1+lp/100)*(1+ws/100),3)+")\nSheet "+num(sa,2)+" m², "+wt(sw)+" per sheet\nTotal weight "+wt2(n*sw)+"\nMesh weight "+num(kg,2)+" kg/m²"+(cur.us?" ("+num(kg*.204816,3)+" lb/ft²)":"");
+  $("mh").textContent=cur.k==="uk"?"UK sheets are the BS 4483 standard sizes (A and B 4.8 × 2.4 m, C 6.0 × 2.4 m).":"Sheet sizes shown are placeholders. Set them to your supplier's size. Weights are calculated from wire size and spacing, so supplier tables may differ slightly.";
+}
+
+/* ---------- Cutting optimizer ---------- */
+function pieces(ms,stock,lap,notes){
+  var p=[];
+  ms.forEach(function(m){
+    for(var k=0;k<m.q;k++){
+      if(m.L>stock+1e-9&&stock>lap){
+        var n=Math.ceil((m.L-lap)/(stock-lap)),rem=m.L-(n-1)*(stock-lap);
+        for(var j=0;j<n-1;j++)p.push({mark:m.mark,L:stock});
+        p.push({mark:m.mark,L:rem});
+        if(k===0)notes.push("Mark "+esc(m.mark)+" is longer than the stock bar, so it is spliced with "+(n-1)+" lap"+(n>2?"s":"")+" of "+fmtL(lap)+" each.");
+      }else p.push({mark:m.mark,L:m.L});
+    }
+  });
+  return p;
+}
+function pack(p,stock){
+  var b=[];p=p.slice().sort(function(x,y){return y.L-x.L});
+  p.forEach(function(x){
+    var best=-1,br=1e9;
+    for(var i=0;i<b.length;i++){var rem=stock-b[i].used-x.L;if(rem>=-1e-9&&rem<br){br=rem;best=i}}
+    if(best<0)b.push({items:[x],used:x.L});else{b[best].items.push(x);b[best].used+=x.L}
+  });
+  return b;
+}
+function packWith(ms,stock,lap){return pack(pieces(ms,stock,lap,[]),stock)}
+function suggest(ms,stock,lap){
+  var base=packWith(ms,stock,lap).length,A=ms.map(function(m){return{mark:m.mark,q:m.q,L:m.L,leg:m.leg,sh:m.sh,lo:m.lo}}),any=false;
+  A.forEach(function(m){if(m.sh>0&&m.L<=stock&&m.L-m.sh>0){m.L-=m.sh;any=true}});
+  if(!any)return null;
+  var best=packWith(A,stock,lap).length;
+  if(best>=base)return null;
+  A.forEach(function(m,i){if(m.L!==ms[i].L){var keep=m.L;m.L=ms[i].L;if(packWith(A,stock,lap).length>best)m.L=keep}});
+  A.forEach(function(m,i){
+    if(m.L!==ms[i].L){
+      var l=0,h=Math.round((ms[i].L-m.L)/step);
+      while(l<h){var mid=(l+h)>>1;m.L=ms[i].L-mid*step;if(packWith(A,stock,lap).length<=best)h=mid;else l=mid+1}
+      m.L=ms[i].L-h*step;
+    }
+  });
+  return {A:A,base:base,best:best};
+}
+function pat(b){
+  var g={},o=[];
+  b.items.sort(function(x,y){return y.L-x.L}).forEach(function(p){var k=p.mark+"|"+p.L;if(!g[k]){g[k]={m:p.mark,L:p.L,c:0};o.push(g[k])}g[k].c++});
+  return o.map(function(x){return(x.c>1?x.c+" × ":"")+esc(x.m)+" ("+fmtL(x.L)+")"}).join(" + ");
+}
+function plan(bars,stock){
+  var g={},o=[];
+  bars.forEach(function(b){var t=pat(b)+" | offcut "+fmtL(stock-b.used);if(!g[t]){g[t]={t:t,c:0};o.push(g[t])}g[t].c++});
+  return "<ul>"+o.map(function(x){return"<li><b>"+x.c+" bar"+(x.c>1?"s":"")+":</b> "+x.t+"</li>"}).join("")+"</ul>";
+}
+function optimize(){
+  var stock=term($("ok").value),lx=parseFloat($("ol").value)||40,by={},errs=[],h="",order=[];
+  if(!stock||stock<=0){$("oo").innerHTML='<p class="err">Enter a stock length.</p>';return}
+  $("ob").value.split("\n").forEach(function(ln,i){
+    ln=ln.trim();if(!ln||ln.slice(0,2)==="//")return;
+    var f=ln.split(",").map(function(s){return s.trim()}),b=bar(f[1]),q=parseInt(f[2],10),L=term(f[3]);
+    if(!b||!q||q<1||!L||L<=0){errs.push("Line "+(i+1)+": "+esc(ln));return}
+    if(!by[b.id]){by[b.id]={b:b,m:[]};order.push(b.id)}
+    by[b.id].m.push({mark:f[0]||"M"+(i+1),q:q,L:L,leg:f[4]||"leg",sh:f[5]?(term(f[5])||0):0,lo:f[6]?(term(f[6])||0):0});
+  });
+  if(errs.length)h+='<p class="err">Could not read: '+errs.join("; ")+"</p>";
+  var tb0=0,tb1=0,kg0=0,kg1=0;
+  order.forEach(function(id){
+    var g=by[id],ms=g.m,lap=lx*g.b.d/25.4,notes=[],sw=stock*.0254*g.b.kg;
+    var p0=pack(pieces(ms,stock,lap,notes),stock);
+    var s=suggest(ms,stock,lap),fin=s?s.A:ms,p1=s?packWith(fin,stock,lap):p0;
+    var net=0;p0.forEach(function(b){net+=b.used});
+    tb0+=p0.length;tb1+=p1.length;kg0+=p0.length*sw;kg1+=p1.length*sw;
+    h+="<h3>Bar "+esc(id)+": "+p0.length+" stock bars</h3><p class=\"hint\">"+wt(p0.length*sw)+" ordered, "+num(net/(p0.length*stock)*100,1)+"% used, "+fmtT(p0.length*stock-net)+" offcut.</p>";
+    notes.forEach(function(n){h+='<p class="hint">'+n+"</p>"});
+    h+=plan(p0,stock);
+    if(s){
+      h+='<div class="sug"><b>Saves '+(s.base-s.best)+" stock bar"+(s.base-s.best>1?"s":"")+" ("+wt((s.base-s.best)*sw)+") of bar "+esc(id)+"</b><ul>";
+      s.A.forEach(function(m,i){if(m.L<ms[i].L-1e-9)h+="<li>Shorten leg "+esc(m.leg)+" of mark "+esc(m.mark)+" by "+fmtL(ms[i].L-m.L)+" (limit "+fmtL(ms[i].sh)+"): cut length "+fmtL(ms[i].L)+" to "+fmtL(m.L)+".</li>"});
+      h+="</ul>New plan:"+plan(p1,stock)+"</div>";
+    }
+    var ups=[];
+    fin.forEach(function(m){
+      if(m.lo<=0||m.L>stock)return;
+      var d=m.lo;p1.forEach(function(b){var c=b.items.filter(function(p){return p.mark===m.mark}).length;if(c)d=Math.min(d,(stock-b.used)/c)});
+      d=Math.floor(d/step+1e-9)*step;
+      if(d>=step)ups.push("Mark "+esc(m.mark)+": leg "+esc(m.leg)+" can grow by up to "+fmtL(d)+" and still fit, which uses offcut instead of scrapping it.");
+    });
+    if(ups.length)h+="<p class=\"hint\"><b>Offcut you can use (checked one mark at a time):</b></p><ul><li>"+ups.join("</li><li>")+"</li></ul>";
+  });
+  if(order.length)h='<div class="tape"><div class="big">'+tb0+" stock bars</div><div class=\"alt\">"+wt2(kg0)+(tb1<tb0?"\nWith suggestions: "+tb1+" bars, "+wt2(kg1)+" (saves "+(tb0-tb1)+")":"\nNo bar-saving leg change found with the limits given.")+"</div></div>"+h;
+  $("oo").innerHTML=h||'<p class="hint">Upload a bar list to see the cutting plan.</p>';
+}
+function sample(){
+  var L=function(mm){return cur.us?fmtIn(Math.round(mm/25.4)):String(mm)},s=cur.sample;
+  return["// mark, size, qty, cut length, flex leg, shorten up to, lengthen up to",
+   ["17-1",s,18,L(4150),"C",L(300)].join(", "),["3C-1",s,12,L(5900),"B","",L(300)].join(", "),["B3",s,4,L(2700)].join(", ")
+  ].join("\n");
+}
+
+/* ---------- App ---------- */
+var CL={stock:"#e8590c",opt:"#3b5bdb",mesh:"#2b8a3e",df:"#b45309",mm:"#7048e8",fi:"#0b7285"};
+var T=[["stock","Stock Length Calculator","Work out how many stock bars to order and what they weigh from your total bar lengths."],["opt","Bar List Optimizer","Upload your bar list from Excel and get cutting plans plus leg changes that save stock bars."],["mesh","Mesh Calculator","Pick a mesh, enter area, lap and wastage, and get sheets and weight."],["df","Decimal Feet to Feet-Inches","Turn decimal feet like 12.4583 into feet, inches and fractions."],["mm","mm to Feet-Inches","Convert millimetres to feet, inches and fractions, rounded the way you detail."],["fi","Feet-Inches to mm","Type 5'-7 3/8\" and get millimetres, decimal inches and decimal feet."]];
+var G=[["Estimating and cutting",["stock","opt","mesh"]],["Dimension converters",["df","mm","fi"]]];
+function ico(t){
+  var c=CL[t],w='fill="#fff"',g,lab={df:"12.5′",mm:"mm",fi:"5′7″"};
+  if(t==="stock")g='<rect width="64" height="64" rx="10" fill="'+c+'"/><rect x="10" y="14" width="44" height="7" rx="3" '+w+'/><rect x="10" y="29" width="44" height="7" rx="3" '+w+'/><rect x="10" y="44" width="30" height="7" rx="3" '+w+'/>';
+  else if(t==="mesh")g='<rect x="2" y="2" width="27" height="27" rx="5" fill="'+c+'"/><rect x="35" y="2" width="27" height="27" rx="5" fill="'+c+'"/><rect x="2" y="35" width="27" height="27" rx="5" fill="'+c+'"/><rect x="35" y="35" width="27" height="27" rx="5" fill="'+c+'"/>';
+  else if(t==="opt")g='<rect width="64" height="64" rx="10" fill="'+c+'"/><rect x="10" y="12" width="30" height="7" rx="3" '+w+'/><rect x="44" y="12" width="10" height="7" rx="3" '+w+' opacity=".6"/><rect x="10" y="29" width="22" height="7" rx="3" '+w+'/><rect x="36" y="29" width="18" height="7" rx="3" '+w+' opacity=".6"/><rect x="10" y="46" width="40" height="7" rx="3" '+w+'/>';
+  else g='<rect width="64" height="64" rx="10" fill="'+c+'"/><text x="32" y="34" text-anchor="middle" font-size="20" font-weight="700" '+w+' font-family="Trebuchet MS,Segoe UI,sans-serif">'+lab[t]+'</text><path d="M10 48h44M16 48v-5M24 48v-3M32 48v-5M40 48v-3M48 48v-5" stroke="#fff" stroke-width="2.4" fill="none"/>';
+  return '<svg viewBox="0 0 64 64" aria-hidden="true">'+g+"</svg>";
+}
+function card(id){var t=T.filter(function(x){return x[0]===id})[0];return'<button class="tool" data-t="'+id+'" style="--c:'+CL[id]+'">'+ico(id)+"<b>"+t[1]+"</b><span>"+t[2]+"</span></button>"}
+$("home").innerHTML=G.map(function(g){return'<h2 class="gh">'+g[0]+'</h2><div class="grid">'+g[1].map(card).join("")+"</div>"}).join("");
+function tab(t){
+  var home=!T.some(function(x){return x[0]===t});
+  $("home").hidden=!home;$("back").hidden=home;
+  document.documentElement.style.setProperty("--c",home?"#e8590c":CL[t]);
+  $("rgl").hidden=!(t==="stock"||t==="opt"||t==="mesh");
+  T.forEach(function(x){$("p-"+x[0]).hidden=x[0]!==t});
+  try{history.replaceState(null,"","#"+(home?"":t))}catch(e){}
+}
+function region(){
+  cur=R[$("rg").value];step=cur.us?1/16:1/25.4;
+  $("sk").value=cur.stock;$("ok").value=cur.stock;
+  $("sr").innerHTML="";addRow(cur.sample,cur.us?"1000'":"1000 m");
+  $("sh").textContent=(cur.us?"Lengths: 1000', 20'-6 1/2\" or 6 m. A plain number counts as inches.":"Lengths: 1000 m, 12500 mm or 40'. A plain number counts as mm.")+" Order weight is stock bars × stock length.";
+  $("ob").value="";$("xs").textContent="";
+  setMesh();calcStock();optimize();
+}
+$("home").addEventListener("click",function(e){var b=e.target.closest(".tool");if(b)tab(b.dataset.t)});
+$("back").onclick=function(){tab("home")};
+$("ttl").onclick=function(){tab("home")};
+$("ttl").addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();tab("home")}});
+/* ---- Dimension converters ---- */
+function fmtD(x,den){
+  var s=x<0?"-":"";x=Math.abs(x);
+  var u=Math.round(x*den),ft=Math.floor(u/(12*den)),r=u-ft*12*den,w=Math.floor(r/den),n=r%den,d=den;
+  while(n>0&&n%2===0){n/=2;d/=2}
+  return s+ft+"′-"+(n?(w?w+" "+n+"/"+d:n+"/"+d):w)+"″";
+}
+var DR=[[16,"Nearest 1/16″"],[8,"Nearest 1/8″"],[4,"Nearest 1/4″"],[2,"Nearest 1/2″"],[1,"Nearest 1″"],[32,"Nearest 1/32″"]];
+function put(o,a,big,alt){$(o).textContent=big;$(a).textContent=alt}
+function calcDim(){
+  var den=parseInt(document.querySelector(".dr").value,10),df=parseFloat($("d1").value),mm=parseFloat($("d2").value);
+  var t=String($("d3").value).toLowerCase().replace(/[\u2032\u2019\u2018`]/g,"'").replace(/[\u2033\u201d\u201c]/g,'"').trim(),fi=t?parseLen(t):null;
+  if(isNaN(df))put("o1","a1","—","Enter a number of feet.");
+  else put("o1","a1",fmtD(df*12,den),num(df*12,4)+" in  |  "+num(df*304.8,1)+" mm");
+  if(isNaN(mm))put("o3","a3","—","Enter millimetres.");
+  else put("o3","a3",fmtD(mm/25.4,den),num(mm/25.4,4)+" in  |  "+num(mm/304.8,4)+" ft");
+  if(fi===null)put("o4","a4","—","Try 5'-7 3/8\" or 5 ft 7 in.");
+  else put("o4","a4",num(fi*25.4,1)+" mm",num(fi/12,4)+" ft  |  "+num(fi,4)+" in  |  "+num(fi*.0254,4)+" m");
+}
+[].forEach.call(document.querySelectorAll(".dr"),function(sel){
+  sel.innerHTML=DR.map(function(r){return'<option value="'+r[0]+'">'+r[1]+"</option>"}).join("");sel.value="16";
+  sel.addEventListener("input",function(){[].forEach.call(document.querySelectorAll(".dr"),function(o){o.value=sel.value});calcDim()});
+});
+["d1","d2","d3"].forEach(function(i){$(i).addEventListener("input",calcDim)});
+document.addEventListener("click",function(e){
+  var c=e.target.closest(".cp"),g=e.target.closest("[data-go]");
+  if(c){try{navigator.clipboard.writeText($(c.dataset.o).textContent)}catch(x){}c.textContent="Copied";setTimeout(function(){c.textContent="Copy result"},1200)}
+  if(g)tab(g.dataset.go);
+});
+calcDim();
+/* ---- Excel / CSV import ---- */
+function cellText(v){v=String(v==null?"":v).trim();return/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(v)?v.replace(/,/g,""):v}
+function mapCols(h){
+  var m={};
+  h.forEach(function(c,i){
+    c=String(c).toLowerCase();
+    var k=/mark|ref|label|\bid\b/.test(c)?"mark":/qty|quant|nos|no\.|count|pcs|number/.test(c)?"qty":/leg|flex/.test(c)?"leg":/short|reduc|minus/.test(c)?"sh":/lengthen|extend|increase|grow|plus/.test(c)?"lo":/length|\blen\b|cut/.test(c)?"len":/size|dia|bar/.test(c)?"size":"";
+    if(k&&m[k]==null)m[k]=i;
+  });
+  return m;
+}
+function loadFile(f,inp){
+  if(!f)return;
+  if(!window.XLSX){$("xs").textContent="The Excel reader did not load. Connect to the internet and reload, or paste the list below.";return}
+  var rd=new FileReader();
+  rd.onload=function(e){
+    try{
+      var csv=/\.csv$/i.test(f.name),wb=csv?XLSX.read(e.target.result,{type:"string"}):XLSX.read(e.target.result,{type:"array"});
+      var rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:false,defval:""});
+      rows=rows.filter(function(r){return r.some(function(c){return String(c).trim()!==""})});
+      var m=mapCols(rows[0]||[]),ok=m.mark!=null&&m.size!=null&&m.qty!=null&&m.len!=null,start=1;
+      if(!ok){m={mark:0,size:1,qty:2,len:3,leg:4,sh:5,lo:6};start=0}
+      var out=[];
+      rows.slice(start).forEach(function(r){
+        var a=[m.mark,m.size,m.qty,m.len,m.leg,m.sh,m.lo].map(function(i){return i==null?"":cellText(r[i])});
+        while(a.length&&a[a.length-1]==="")a.pop();
+        if(a.length>=4)out.push(a.join(", "));
+      });
+      $("ob").value="// loaded from "+f.name+"\n"+out.join("\n");
+      $("xs").textContent=out.length+" bar marks loaded from "+f.name+(ok?"":" (no header row found, so columns were read in the standard order)");
+      optimize();
+    }catch(err){$("xs").textContent="Could not read that file. Save it as .xlsx or .csv with the columns shown in the template."}
+    if(inp)inp.value="";
+  };
+  if(/\.csv$/i.test(f.name))rd.readAsText(f);else rd.readAsArrayBuffer(f);
+}
+$("xf").addEventListener("change",function(){loadFile(this.files[0],this)});
+$("p-opt").addEventListener("dragover",function(e){e.preventDefault()});
+$("p-opt").addEventListener("drop",function(e){e.preventDefault();if(e.dataTransfer&&e.dataTransfer.files.length)loadFile(e.dataTransfer.files[0])});
+$("tpl").onclick=function(){
+  var rows=[["Mark","Size","Qty","Cut length","Flex leg","Can shorten by","Can lengthen by"]];
+  sample().split("\n").slice(1).forEach(function(l){rows.push(l.split(",").map(function(x){return x.trim()}))});
+  var csv=rows.map(function(r){return r.map(function(c){return/[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c}).join(",")}).join("\r\n");
+  var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv"}));a.download="rebar-bar-list-template.csv";a.click();
+};
+$("rg").onchange=region;
+$("sadd").onclick=function(){addRow(cur.sample,cur.us?"500'":"500 m");calcStock()};
+$("sr").addEventListener("input",calcStock);
+$("sr").addEventListener("click",function(e){if(e.target.classList.contains("x")){e.target.parentNode.remove();calcStock()}});
+["sk","sa"].forEach(function(i){$(i).addEventListener("input",calcStock)});
+$("mp").onchange=loadSheet;
+["mL","mW","ma","ml","mw","mk"].forEach(function(i){$(i).addEventListener("input",calcMesh)});
+["ok","ol","ob"].forEach(function(i){$(i).addEventListener("input",optimize)});
+region();
+var h=(location.hash||"").replace("#","");
+tab(h);
+})();
+</script>
+</body>
+</html>
